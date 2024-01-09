@@ -1,0 +1,26 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '13.0'
+
+target 'Runner' do
+  # Añadir las dependencias de CocoaPods aquí
+  use_frameworks!
+
+  # Ejemplo con una dependencia
+  # pod 'Alamofire', '~> 5.0'
+
+  # Ejemplo con múltiples dependencias
+  # pod 'SwiftyJSON', '~> 4.0'
+  # pod 'Firebase/Auth', '~> 9.0'
+
+  # Asegúrate de ajustar las dependencias según tus necesidades
+end
+
+# Puedes añadir más objetivos (targets) para diferentes partes de tu proyecto si es necesario
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Aquí puedes realizar configuraciones adicionales si es necesario
+    end
+  end
+end
