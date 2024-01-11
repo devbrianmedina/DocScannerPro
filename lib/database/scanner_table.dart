@@ -11,6 +11,7 @@ class ScannerTable {
   }
 
   static Future<int> update(Scanner scanner) async {
+    scanner.imagesPath = Set<String>.from(scanner.imagesPath).toList();
     Database db = await DBHelper().database;
     return db.update(tableName, scanner.toMap(), where: 'id_scanner = ?', whereArgs: [scanner.idScanner]);
   }

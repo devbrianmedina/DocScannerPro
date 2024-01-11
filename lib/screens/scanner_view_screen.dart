@@ -160,7 +160,6 @@ class _ScannerViewScreenPageState extends State<ScannerViewScreenPage> with Sing
               onPress: () async {
                 final String? imagePath = (await CunningDocumentScanner.getPictures(true))?.last;
                 if(imagePath == null) return;
-                String dateTime = DateFormat("yyyy/MM/dd HH:mm aa").format(DateTime.now());
                 String? image = await ImageSaverUtil.saveImage(imagePath, "DocScannerPro");
                 if(image == null) return;
                 setState(() {
