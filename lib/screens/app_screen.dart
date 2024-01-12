@@ -93,7 +93,7 @@ class _AppScreenPageState extends State<AppScreenPage> with SingleTickerProvider
                 ListTile(
                   title: const Text("Scanner"),
                   leading: const Icon(Icons.camera),
-                  selected: currentView == 'resume',
+                  selected: currentView == 'scanner',
                   onTap: () {
                     setCurrentView('scanner');
                     Navigator.pop(context);
