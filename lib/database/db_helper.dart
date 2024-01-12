@@ -31,6 +31,17 @@ CREATE TABLE IF NOT EXISTS scanner (
 );
               """
           );
+          await db.execute("""
+CREATE TABLE settings (
+  id INTEGER PRIMARY KEY,
+  darkTheme INTEGER,
+  preferredAdType TEXT
+);
+          """
+          );
+          // Insert default settings
+          await db.rawInsert('INSERT INTO settings (darkTheme, preferredAdType) VALUES (?, ?)', [0, '']);
+
         }
     );
   }

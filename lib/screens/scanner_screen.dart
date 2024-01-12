@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:doc_scanner_pro/database/scanner_table.dart';
-import 'package:doc_scanner_pro/models/Scanner.dart';
+import 'package:doc_scanner_pro/models/scanner.dart';
 import 'package:doc_scanner_pro/screens/scanner_view_screen.dart';
+import 'package:doc_scanner_pro/utils/file_util.dart';
 import 'package:doc_scanner_pro/utils/image_saver_util.dart';
 import 'package:doc_scanner_pro/widgets/floating_action_bubble.dart';
 import 'package:file_picker/file_picker.dart';
@@ -64,12 +65,25 @@ class _ScannerScreenPageState extends State<ScannerScreenPage> with SingleTicker
                     leading: CircleAvatar(
                       backgroundImage: FileImage(File(scanner.imagesPath.first)),
                     ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        setState(() {
+                          listScanner.removeAt(index);
+                        });
+                        await ScannerTable.delete(scanner);
+                        for(String path in scanner.imagesPath) {
+                          await FileUtil.deleteFile(path);
+                        }
+                      },
+                    ),
                     title: Text(scanner.title),
                     subtitle: Text(scanner.createdAt),
-                    onTap: () {
-                      Navigator.of(context).push(
+                    onTap: () async {
+                      await Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) => ScannerViewScreenPage(scanner: scanner,))
                       );
+                      await loadData();
                     },
                     // Add more widgets as needed
                   );

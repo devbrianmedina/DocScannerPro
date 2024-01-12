@@ -22,6 +22,7 @@ dependencies:
   pdf_image_renderer: ^0.7.0
   image: ^4.1.3
   uuid: ^4.3.2
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

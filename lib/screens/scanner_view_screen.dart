@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:doc_scanner_pro/database/scanner_table.dart';
+import 'package:doc_scanner_pro/screens/my_image_viewer.dart';
+import 'package:doc_scanner_pro/utils/file_util.dart';
 import 'package:doc_scanner_pro/utils/image_saver_util.dart';
 import 'package:doc_scanner_pro/widgets/floating_action_bubble.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:doc_scanner_pro/models/Scanner.dart';
+import 'package:doc_scanner_pro/models/scanner.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -98,7 +100,7 @@ class _ScannerViewScreenPageState extends State<ScannerViewScreenPage> with Sing
             ),
             TextButton(
               onPressed: () {
-                Share.shareXFiles([XFile(file.path)], text: 'Doc Scanner Pro');
+                Share.shareXFiles([XFile(file.path)], text: 'Doc Scanner Pro\nhttps://dercide.com');
               },
               child: Text('Compartir'),
             ),
@@ -113,7 +115,6 @@ class _ScannerViewScreenPageState extends State<ScannerViewScreenPage> with Sing
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.scanner.title),
         actions: [
           PopupMenuButton(
@@ -121,15 +122,27 @@ class _ScannerViewScreenPageState extends State<ScannerViewScreenPage> with Sing
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
-                  child: const Text('Compartir Pdf'),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.picture_as_pdf),
+                      SizedBox(width: 8.0,),
+                      Text('Compartir Pdf')
+                    ],
+                  ),
                   onTap: () async {
                     await convertImagesToPdf(context);
                   },
                 ),
                 PopupMenuItem(
-                  child: const Text('Compartir Imagenes'),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.image),
+                      SizedBox(width: 8.0,),
+                      Text('Compartir Imagenes')
+                    ],
+                  ),
                   onTap: () async {
-                    Share.shareXFiles(widget.scanner.imagesPath.map((e) => XFile(e)).toList(), text: 'Doc Scanner Pro');
+                    Share.shareXFiles(widget.scanner.imagesPath.map((e) => XFile(e)).toList(), text: 'Doc Scanner Pro\nhttps://dercide.com');
                   },
                 )
               ];
@@ -252,17 +265,45 @@ class _ScannerViewScreenPageState extends State<ScannerViewScreenPage> with Sing
 
   List<Widget> _buildGridItems() {
     return imagePaths.map((imagePath) {
+      File file = File(imagePath);
       return SizedBox(
         key: ValueKey(imagePath),
         child: GestureDetector(
           onTap: () {
-            // Handle image tap (if needed)
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => MyImageViewer(imageFile: file))
+            );
           },
           child: Card(
             elevation: 4.0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0), // Ajusta el radio según tus preferencias
-              child: Image.file(File(imagePath), fit: BoxFit.cover),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.file(file, fit: BoxFit.cover),
+                ),
+                Positioned(
+                  top: 0.0,
+                  right: 0.0,
+                  child: IconButton(
+                    icon:  Icon(Icons.delete, color: Colors.red.shade800,),
+                    onPressed: () async {
+                      // Handle delete icon tap
+                      setState(() {
+                        imagePaths.removeWhere((element) => element == imagePath);
+                      });
+                      if(imagePaths.isNotEmpty) {
+                        widget.scanner.imagesPath = imagePaths;
+                        await ScannerTable.update(widget.scanner);
+                      } else {
+                        await ScannerTable.delete(widget.scanner);
+                        Navigator.of(context).pop();
+                      }
+                      await FileUtil.deleteFile(imagePath);
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),

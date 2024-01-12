@@ -1,5 +1,5 @@
 import 'package:doc_scanner_pro/database/db_helper.dart';
-import 'package:doc_scanner_pro/models/Scanner.dart';
+import 'package:doc_scanner_pro/models/scanner.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ScannerTable {
